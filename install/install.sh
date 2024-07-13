@@ -40,10 +40,10 @@ function fs_install_dependency() {
             fs_print_red "[ X ]"
             fs_print_red "${package}"
             fs_print_white_line "is not installed"
-            ts_install_list+=("$package")
+            to_install_list+=("$package")
         else
             fs_print_green "[ √ ]"
-            fs_print_blue "${package}"
+            fs_print_green "${package}"
             fs_print_white_line "is installed"
         fi
     done
