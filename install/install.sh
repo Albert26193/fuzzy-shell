@@ -37,15 +37,19 @@ function fs_install_dependency() {
     local to_install_list=()
     for package in "${all_install_list[@]}"; do
         if ! which "$package" &>/dev/null; then
-            echo "[ X ] $package is not installed"
-            to_install_list+=("$package")
+            fs_print_red "[ X ]"
+            fs_print_red "${package}"
+            fs_print_white_line "is not installed"
+            ts_install_list+=("$package")
         else
-            echo "[ √ ] $package is already installed."
+            fs_print_green "[ √ ]"
+            fs_print_blue "${package}"
+            fs_print_white_line "is installed"
         fi
     done
 
     if [[ ${#to_install_list[@]} -eq 0 ]]; then
-        echo "All dependency installed, exit now..."
+        echo "All dependency installed!"
         return 0
     fi
 
