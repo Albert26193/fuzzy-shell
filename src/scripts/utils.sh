@@ -116,7 +116,7 @@ function fs_check_os() {
     fi
 
     case $OS in
-    "Ubuntu" | "Debian" | "CentOS" | "macOS" )
+    "Ubuntu" | "Debian" | "CentOS" | "macOS")
         echo $OS
         ;;
     *)
@@ -147,4 +147,40 @@ function fs_check_arch() {
         echo "Other"
         ;;
     esac
+}
+
+###################################################
+# description: get actual user from SUDO
+#      return: user's name
+###################################################
+function fs_get_user() {
+    # check if exists $SUDO_USER
+    if [ -n "$SUDO_USER" ]; then
+        original_user=$SUDO_USER
+        printf "$original_user"
+    else
+        current_user=$(whoami)
+        printf "${current_user}"
+    fi
+}
+
+###################################################
+# description: get actual user from SUDO
+#          $1: user name
+#      return: user's name
+###################################################
+function fs_get_shell() {
+    if [[ -z "$1" ]]; then
+        fs_print_red_line "Error: user name is empty."
+        return 1
+    fi
+
+    local user_shell=$(getent passwd $1 | cut -d: -f7)
+    if [[ ${user_shell} =~ "bash" || ${user_shell} =~ "zsh" ]]; then
+        echo "${user_shell}"
+    else
+        echo "no_supported_shell"
+    fi
+
+    return 0
 }

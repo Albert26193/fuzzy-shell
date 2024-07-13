@@ -39,6 +39,7 @@ function fuzzy_shell_search {
         fi
     fi
 
+    # exclude dirs
     local exclude_args=()
     for dir in "${fs_search_ignore_dirs[@]}"; do
         dir=$(bash -c "echo ${dir}")
@@ -78,8 +79,8 @@ function fuzzy_shell_search {
 ###################################################
 function fuzzy_shell_jump {
     local target_file="$(fuzzy_shell_search $1 $2)"
-    echo $target_file
-    echo "---------"
+    # echo $target_file
+    # echo "---------"
     if [[ -d "${target_file}" ]]; then
         cd "${target_file}" && fs_show_files
     elif [[ -f "${target_file}" ]]; then
@@ -134,7 +135,7 @@ function fs_show_files {
 
     printf "\033[1;30m\033[44mjump to: \033[1;30m\033[42m%s\033[0m\n" "${currentPath}"
     printf "\033[1;30m\033[44mfile count: \033[1;30m\033[42m%s\033[0m\n" "${totalNum}"
-    printf "%s\n" "============="
+    printf "%s\n" "---------"
 
     if [[ ${totalNum} -le 35 ]]; then
         ls -al | tail -n +2
