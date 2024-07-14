@@ -6,8 +6,9 @@
 #      return: 0: succeed | 1: failed
 ###################################################
 function fs_uninstall {
+    # source utils.sh
     local git_root="$(git rev-parse --show-toplevel 2>/dev/null)"
-    local util_file_path="${git_root}/copy/scripts/utils.sh"
+    local util_file_path="${git_root}/src/scripts/utils.sh"
 
     if [[ ! -f "${util_file_path}" ]]; then
         printf "%s\n" "${util_file_path} do not exist."
@@ -18,19 +19,42 @@ function fs_uninstall {
     fi
 
     # Check if the script is executed as root
-    if [[ "$(id -u)" -eq 0 ]]; then
-        fs_print_error_line "Please Don't run this script as root." >&2
+    if [[ ! "$(id -u)" -eq 0 ]]; then
+        fs_print_error_line "Please run this script as root or sudo." >&2
         return 1
     fi
 
-    local target_dir="${HOME}/.fuzzy_shell"
+    # remove bin files
+    local to_check_list=("fzf" "fd")
+    for item in "${to_check_list[@]}"; do
+        if [[ -L "/usr/bin/${item}" ]]; then
+            bash -c "rm /usr/bin/${item}"
+            fs_print_green_line "${item} is removed."
+        fi
+    done
 
-    if [[ ! -d "${target_dir}" ]]; then
-        fs_print_warning_line "${target_dir} not existed, exits now."
-        exit 1
+    # get actual user
+    local actual_user=$(fs_get_user)
+    if [[ -z "${actual_user}" ]]; then
+        fs_print_error_line "Error: actual user not found."
+        return 1
     fi
 
-    if ! fs_yn_prompt "Do you want to REMOVE ${fs_COLOR_GREEN}${target_dir}(install dir)${fs_COLOR_RESET} ?"; then
+    # get actual user home
+    local user_home=$(su - ${actual_user} -c "printf '%s' \"\$HOME\"")
+    if [[ -z "${user_home}" ]]; then
+        fs_print_error_line "Error: actual user not found."
+        return 1
+    fi
+
+    # get target dir
+    local target_dir="${user_home}/.fuzzy_shell"
+    if [[ ! -d "${target_dir}" ]]; then
+        fs_print_warning_line "${target_dir} not existed, exits now."
+        return 1
+    fi
+
+    if ! fs_yn_prompt "Do you want to REMOVE ${FS_COLOR_GREEN}${target_dir}(install dir)${FS_COLOR_RESET} ?"; then
         fs_print_white_line "Exit Now..."
         return 1
     else

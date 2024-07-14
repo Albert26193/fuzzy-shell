@@ -3,7 +3,7 @@
 #       input: none
 #      return: 0: success | 1: fail
 ###################################################
-function fs_install_dependency() {
+function fs_install_dependency {
     # load config file
     local git_root="$(git rev-parse --show-toplevel 2>/dev/null)"
     local util_file_path="${git_root}/src/scripts/utils.sh"
@@ -174,7 +174,7 @@ function fs_install_files {
 #       input: none
 #      return: 0: succeed | 1: failed
 ###################################################
-function fs_link_to_bin() {
+function fs_link_to_bin {
     local git_root="$(git rev-parse --show-toplevel 2>/dev/null)"
 
     local src="${git_root}/install/bin/${1}"
@@ -198,7 +198,7 @@ function fs_link_to_bin() {
 #       input: none
 #      return: 0: succeed | 1: failed
 ###################################################
-function fs_add_to_shellrc() {
+function fs_add_to_shellrc {
     if [[ -z "${user_shell}" || -z "${user_home}" ]]; then
         fs_print_red_line "some param is empty."
         return 1
@@ -231,23 +231,21 @@ function fs_add_to_shellrc() {
     fs_print_white_line '#------------------- fuzzy-shell -------------------'
     fs_print_white_line "have already added below to your ~/.${user_shell}rc:"
     fs_print_green_line '   source ${HOME}/.fuzzy_shell/scripts/export.sh'
-    fs_print_green_line '   source ${HOME}/.fuzzy_shell/config.env'
-    fs_print_green_line "   alias "fs"="fuzzy_shell_search""
-    fs_print_green_line "   alias "fj"="fuzzy_shell_jump""
-    fs_print_green_line "   alias "fe"="fuzzy_shell_edit""
-    fs_print_green_line "   alias "hh"="fuzzy_shell_history""
+    fs_print_green_line '   alias "fs"="fuzzy --search'
+    fs_print_green_line '   alias "fj"="fuzzy --jump"'
+    fs_print_green_line '   alias "fe"="fuzzy --edit"'
+    fs_print_green_line '   alias "hh"="fuzzy --history"'
 
     echo -e "" >>"${user_shellrc}"
     echo '#------------------- fuzzy-shell -------------------
 source "${HOME}/.fuzzy_shell/scripts/export.sh"
-source "${HOME}/.fuzzy_shell/config.env"
-alias "fs"="fuzzy_shell_search"
-alias "fj"="fuzzy_shell_jump"
-alias "fe"="fuzzy_shell_edit"
-alias "hh"="fuzzy_shell_history"
+alias "fs"="fuzzy --search"
+alias "fj"="fuzzy --jump"
+alias "fe"="fuzzy --edit"
+alias "hh"="fuzzy --history"
 ' >>"${user_shellrc}"
 
-    fs_print_white_line "then, exec "source ${user_shellrc}" to make it work."
+    fs_print_white_line "then, exec source ${user_shellrc} to make it work."
 }
 
 fs_install_dependency &&
