@@ -72,8 +72,8 @@ function fuzzy {
         printf "%s\n" "Options:"
         printf "%s\n" "  -s, --search [keyword1] [keyword2], namely fuzzy search"
         printf "%s\n" "  -H, --history                     , namely fuzzy history search"
-        printf "%s\n" "  -j, --jump [keyword1] [keyword2],   namely fuzzy jump"
-        printf "%s\n" "  -e, --edit [keyword1] [keyword2],   namely fuzzy edit"
+        printf "%s\n" "  -j, --jump [keyword1] [keyword2]  , namely fuzzy jump"
+        printf "%s\n" "  -e, --edit [keyword1] [keyword2]  , namely fuzzy edit"
         ;;
     esac
 }
