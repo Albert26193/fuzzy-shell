@@ -29,6 +29,14 @@ function fs_install_dependency() {
         return 1
     fi
 
+    # check if current os is Linux
+    if fs_check_os | grep -q "Mac"; then
+        fs_print_red "only support Linux os, current os is:"
+        fs_print_white_line "$(fs_check_os)"
+        fs_print_white_line "you can check fuzzy-mac for macOS."
+        return 1
+    fi
+
     local all_install_list=(
         "fd"
         "fzf"
@@ -59,7 +67,11 @@ function fs_install_dependency() {
     printf "${FS_COLOR_CYAN}%s${FS_COLOR_RESET} " "${to_install_list[@]}"
     printf "\n"
     fs_print_cyan_line "total count to install: ${#to_install_list[@]}"
-    if fs_yn_prompt "Do you want to ${FS_COLOR_GREEN}install all dependency${FS_COLOR_RESET}?"; then
+
+    # hint to install manually
+    fs_print_warning_line "STRONGLY recommend that you manually install the required dependencies by package manager (like apt/yum etc.) "
+    fs_print_yellow_line "If you want to simplify the installation process, fuzzy_shell also provides binary files."
+    if fs_yn_prompt "Do you want to ${FS_COLOR_GREEN}install all dependency${FS_COLOR_RESET} with provided binary files?"; then
         fs_print_white_line "install dependency ..."
         for item in "${to_install_list[@]}"; do
             if fs_link_to_bin "${item}"; then
@@ -109,12 +121,8 @@ function fs_install_files {
     # get target dir
     local target_dir="${user_home}/.fuzzy_shell"
     if [[ ! -d "${target_dir}" ]]; then
-        fs_print_warning_line "${target_dir} not existed, create it"
+        # fs_print_warning_line "${target_dir} not existed, create it"
         bash -c "mkdir ${target_dir}"
-    fi
-    if ! fs_yn_prompt "\ninstall: Do you want to \ncopy ${FS_COLOR_GREEN}${git_root}/src (current dir)${FS_COLOR_RESET} \nto ${FS_COLOR_GREEN}${target_dir}(install dir)${FS_COLOR_RESET} ?"; then
-        fs_print_white_line "Exit Now..."
-        return 1
     fi
 
     # copy to target dir
@@ -122,48 +130,42 @@ function fs_install_files {
         fs_print_error_line "${git_root}/src not existed, please check."
         return 1
     fi
+
     if [[ $(ls -A "${target_dir}") ]]; then
-        fs_print_blue_line "ls -al ${target_dir} as below:"
-        echo -e ""
-        ls -al "${target_dir}"
-        fs_print_warning_line "You should keep ${target_dir} empty."
-        if ! fs_yn_prompt "\n${target_dir} is not empty, \ndo you want to remove all files in it and continue?"; then
-            fs_print_info_line "You should keep ${target_dir} empty. Remove all files in it manaully."
+        if ! fs_yn_prompt "\n${target_dir} is not empty, \nDo you want to ${FS_COLOR_GREEN}reinstall it${FS_COLOR_RESET} ?"; then
             fs_print_white_line "Exit Now..."
             return 1
         fi
         bash -c "rm -r ${target_dir}/*"
-        fs_print_green_line "${target_dir} is clear now."
     fi
+
+    # copy files (install)
     bash -c "cp -r ${git_root}/src/* ${target_dir}"
     # chown to actual user
     chown "${actual_user}:${actual_user}" "${target_dir}/config.env"
 
+    # check if installed successfully
     if [[ -d "${target_dir}/scripts" ]] &&
         [[ -f "${target_dir}/config.env" ]]; then
-        fs_print_white "copy successfully"
-        # fs_print_white "copy successfully, ls -al"
-        # fs_print_info "${target_dir}"
-        # fs_print_white_line " as below:"
-        echo -e "\n"
-        # ls -al "${target_dir}"
+        fs_print_white "installed files successfully."
+        echo -e ""
     else
-        printf '%s\n' "${target_dir} copy failed."
+        printf '%s\n' "${target_dir} installed failed."
+        return 1
     fi
 
+    # add fuzzy-shell script to shellrc
     local user_shell=$(fs_get_shell "${actual_user}")
     if [[ -z "${user_shell}" ]]; then
         fs_print_red_line "get user shell failed."
         return 1
     fi
-
     if ! fs_add_to_shellrc "${user_shell}"; then
         fs_print_red_line "add fuzzy-shell script to ${user_shell}rc failed."
         return 1
     fi
 
-    fs_print_green_line "fuzzy-shell files are deployed to ${target_dir} sucessfully. Congratulations! 🍺️"
-
+    fs_print_green_line "fuzzy-shell has installed sucessfully. Congratulations! 🍺️"
     return 0
 }
 
@@ -223,10 +225,11 @@ function fs_add_to_shellrc() {
         return 0
     fi
 
-    # add fuzzy-shell script to ~/.zshrc
+    # add fuzzy-shell script to shellrc
     echo -e "---------------------------------------------\n"
     fs_print_info_line "TIP: "
-    fs_print_white_line "have already added below to your ~/.zshrc:"
+    fs_print_white_line '#------------------- fuzzy-shell -------------------'
+    fs_print_white_line "have already added below to your ~/.${user_shell}rc:"
     fs_print_green_line '   source ${HOME}/.fuzzy_shell/scripts/export.sh'
     fs_print_green_line '   source ${HOME}/.fuzzy_shell/config.env'
     fs_print_green_line "   alias "fs"="fuzzy_shell_search""
@@ -234,6 +237,7 @@ function fs_add_to_shellrc() {
     fs_print_green_line "   alias "fe"="fuzzy_shell_edit""
     fs_print_green_line "   alias "hh"="fuzzy_shell_history""
 
+    echo -e "" >>"${user_shellrc}"
     echo '#------------------- fuzzy-shell -------------------
 source "${HOME}/.fuzzy_shell/scripts/export.sh"
 source "${HOME}/.fuzzy_shell/config.env"
