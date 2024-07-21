@@ -188,9 +188,9 @@ function fs_get_shell {
         user_shell=$(grep "^${user}:" /etc/passwd 2>/dev/null | cut -d: -f7)
     fi
 
-    # As a last resort, try su (requires root or appropriate permissions)
+    # As a last resort, try echo $SHELL
     if [[ -z "$user_shell" ]]; then
-        user_shell=$(su - "$user" -c 'echo $SHELL' 2>/dev/null)
+        user_shell=$(echo $SHELL)
     fi
 
     # If we still don't have a shell, return an error
