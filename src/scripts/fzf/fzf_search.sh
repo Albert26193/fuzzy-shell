@@ -16,9 +16,14 @@ function fuzzy_shell_search {
     # variable load
     local fs_var_file="${HOME}/.fuzzy_shell/config.env"
 
-    if [[ -z "${fs_search_dirs}" ]] || [[ -z "${fs_search_preview}" ]] || [[ -z "${fs_editor}" ]]; then
-        printf "%s" "some of env variable is empty, please check it in "${HOME}/.fuzzy_shell/config.env".\n"
-        printf "%s" "Now, try to source ${fs_var_file} ..."
+    if [[ ! -f "${fs_var_file}" ]]; then
+        printf "%s" "${fs_var_file} not exist, please check it."
+        return 1
+    fi
+
+    if [[ -z "${FS_SEARCH_DIRS}" ]] || [[ -z "${FS_SEARCH_PREVIEW}" ]] || [[ -z "${FS_EDITOR}" ]]; then
+        printf "%s\n" "some of env variable is empty, please check it in ${HOME}/.fuzzy_shell/config.env."
+        printf "%s\n" "Now, try to source ${fs_var_file} ..."
         if [[ -f "${fs_var_file}" ]]; then
             source "${fs_var_file}"
         else
@@ -26,6 +31,12 @@ function fuzzy_shell_search {
             return 1
         fi
     fi
+
+    # load to local variable
+    local fs_search_dirs=(${FS_SEARCH_DIRS[@]})
+    local fs_search_ignore_dirs=(${FS_SEARCH_IGNORE_DIRS[@]})
+    local fs_search_preview=${FS_SEARCH_PREVIEW}
+    local fs_editor=${FS_EDITOR}
 
     # exclude dirs
     local exclude_args=()
@@ -93,14 +104,13 @@ function fuzzy_shell_edit {
         return 1
     fi
 
-    if [[ -z "${fs_editor}" ]]; then
-        printf "%s" "env ${fs_editor} is empty, please check it."
+    local editor=${FS_EDITOR}
+    if [[ -z "${FS_EDITOR}" ]]; then
+        printf "%s" "env ${FS_EDITOR} is empty, please check it."
         return 1
     fi
 
-    local editor=$(bash -c "echo ${fs_editor}")
-
-    if ! command -v ${editor}; then
+    if ! command -v ${editor} 2>&1 >/dev/null; then
         printf "%s" "${editor} is NOT executable, please check it."
         return 1
     fi
@@ -135,26 +145,6 @@ function fs_show_files {
         echo "files in current directory is more than 100"
     else
         ls -a
-    fi
-    return 0
-}
-
-###################################################
-# description: source execute files
-#       input: none
-#      return: 0: success | 1: fail
-###################################################
-function fs_pre_source {
-    # source utils.sh
-    local fs_root="${HOME}/.fuzzy_shell"
-    local util_file_path="${fs_root}/scripts/utils.sh"
-
-    if [[ ! -f "${util_file_path}" ]]; then
-        printf "%s\n" "${util_file_path} do not exist. Install fuzzy-shell first."
-        printf "%s\n" "Exit Now..."
-        return 1
-    else
-        source "${util_file_path}"
     fi
     return 0
 }
