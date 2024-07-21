@@ -316,7 +316,7 @@ function fs_add_to_shellrc {
     fs_print_green_line '   alias "fs"="fuzzy --search'
     fs_print_green_line '   alias "fj"="fuzzy --jump"'
     fs_print_green_line '   alias "fe"="fuzzy --edit"'
-    fs_print_green_line '   alias "hh"="fuzzy --history"'
+    fs_print_green_line '   alias "fh"="fuzzy --history"'
 
     echo -e "" >>"${user_shellrc}"
     echo '#------------------- fuzzy-shell -------------------
