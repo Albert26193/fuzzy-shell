@@ -227,7 +227,11 @@ function fs_install_files {
     # copy files (install)
     bash -c "cp -r ${git_root}/src/* ${target_dir}"
     # chown to actual user
-    chown "${actual_user}:${actual_user}" "${target_dir}/config.env"
+    if [[ $(fs_check_os) =~ "macOS" ]]; then
+        bash -c "chown -R ${actual_user}:staff ${target_dir}"
+    else
+        bash -c "chown -R ${actual_user}:${actual_user} ${target_dir}"
+    fi
 
     # check if installed successfully
     if [[ -d "${target_dir}/scripts" ]] &&
