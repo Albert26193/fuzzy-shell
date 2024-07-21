@@ -244,7 +244,12 @@ function fs_install_files {
     if [[ -z "${user_shell}" ]]; then
         fs_print_red_line "get user shell failed."
         return 1
+    elif [[ "${user_shell}" =~ "no_supported_shell" ]]; then
+        user_shell="zsh"
+        fs_print_red_line "shell type NOT supported. "
+        return 1
     fi
+
     if ! fs_add_to_shellrc "${user_shell}"; then
         fs_print_red_line "add fuzzy-shell script to ${user_shell}rc failed."
         return 1

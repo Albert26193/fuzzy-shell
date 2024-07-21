@@ -174,7 +174,16 @@ function fs_get_shell {
         return 1
     fi
 
-    local user_shell=$(getent passwd $1 | cut -d: -f7)
+    local user_shell="zsh"
+    if command -v getent &>/dev/null; then
+        user_shell=$(getent passwd $1 | cut -d: -f7)
+    else
+        user_shell=$(grep "^${1}:" /etc/passwd | cut -d: -f7)
+        if [[ -z "${user_shell}" ]]; then
+            user_shell=$(su - $1 -c 'echo $SHELL')
+        fi
+    fi
+
     if [[ ${user_shell} =~ "bash" || ${user_shell} =~ "zsh" ]]; then
         echo "${user_shell}"
     else
