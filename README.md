@@ -7,8 +7,9 @@
 
 - Doc Site: [fuzzy shell doc site](https://fuzzy.albert.cool/)
 - 中文站点：[fuzzy shell 文档](https://fuzzy.albert.cool/zh/)
+- Preview:
 
-![preview.gif](https://img-20221128.oss-cn-shanghai.aliyuncs.com/img-2023-05/fs-002.gif)
+![](https://img-20221128.oss-cn-shanghai.aliyuncs.com/img-2023-05/fs-002%20(1).gif)
 
 > [!TIP]
 > 1. `fuzzy_shell` combines the `fd` and `fzf` tools, making it more user-friendly.
