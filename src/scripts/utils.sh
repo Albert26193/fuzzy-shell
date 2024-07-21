@@ -169,21 +169,37 @@ function fs_get_user {
 #      return: user's name
 ###################################################
 function fs_get_shell {
-    if [[ -z "$1" ]]; then
-        fs_print_red_line "Error: user name is empty."
+    local user="$1"
+    local user_shell=""
+
+    # Check if user is provided
+    if [[ -z "$user" ]]; then
+        echo "Error: No user specified" >&2
         return 1
     fi
 
-    local user_shell="zsh"
+    # Try getent first
     if command -v getent &>/dev/null; then
-        user_shell=$(getent passwd $1 | cut -d: -f7)
-    else
-        user_shell=$(grep "^${1}:" /etc/passwd | cut -d: -f7)
-        if [[ -z "${user_shell}" ]]; then
-            user_shell=$(su - $1 -c 'echo $SHELL')
-        fi
+        user_shell=$(getent passwd "$user" 2>/dev/null | cut -d: -f7)
     fi
 
+    # If getent failed or is not available, try /etc/passwd
+    if [[ -z "$user_shell" ]] && [[ -r /etc/passwd ]]; then
+        user_shell=$(grep "^${user}:" /etc/passwd 2>/dev/null | cut -d: -f7)
+    fi
+
+    # As a last resort, try su (requires root or appropriate permissions)
+    if [[ -z "$user_shell" ]]; then
+        user_shell=$(su - "$user" -c 'echo $SHELL' 2>/dev/null)
+    fi
+
+    # If we still don't have a shell, return an error
+    if [[ -z "$user_shell" ]]; then
+        echo "Error: Could not determine shell for user $user" >&2
+        return 1
+    fi
+
+    # get shell name
     if [[ ${user_shell} =~ "bash" || ${user_shell} =~ "zsh" ]]; then
         echo "${user_shell}"
     else

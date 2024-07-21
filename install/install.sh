@@ -249,7 +249,6 @@ function fs_install_files {
         fs_print_red_line "get user shell failed."
         return 1
     elif [[ "${user_shell}" =~ "no_supported_shell" ]]; then
-        user_shell="zsh"
         fs_print_red_line "shell type NOT supported. "
         return 1
     fi
