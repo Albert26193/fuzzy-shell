@@ -264,9 +264,9 @@ function fs_check_user_shell_version {
     local actual_user=$(fs_get_user)
     local user_shell=$(fs_get_shell ${actual_user})
 
-    if [[ ${user_shell} == "bash" ]]; then
+    if [[ ${user_shell} =~ "bash" ]]; then
         fs_check_bash_version
-    elif [[ ${user_shell} == "zsh" ]]; then
+    elif [[ ${user_shell} =~ "zsh" ]]; then
         fs_check_zsh_version
     else
         fs_print_red_line "Error: no supported shell found."
