@@ -34,7 +34,8 @@ function fs_source_scripts {
 # description: export fuzzy function for usr interface
 #          $1: [option]
 #          $2: [args]
-#          $2: [argw
+#          $3: [args]
+#          $4: [args]
 #      return: 0: success | 1: fail
 ###################################################
 function fuzzy {
@@ -56,16 +57,16 @@ function fuzzy {
     # parse input args
     case "$1" in
     "--search" | "-s")
-        fuzzy_shell_search "$2" "$3"
+        fuzzy_shell_search "$2" "$3" "$4"
         ;;
     "--history" | "-H")
         fuzzy_shell_history
         ;;
     "--jump" | "-j")
-        fuzzy_shell_jump "$2" "$3"
+        fuzzy_shell_jump "$2" "$3" "$4"
         ;;
     "--edit" | "-e")
-        fuzzy_shell_edit "$2" "$3"
+        fuzzy_shell_edit "$2" "$3" "$4"
         ;;
     "--help" | "-h" | *)
         printf "%s\n" "Usage: fuzzy [option] [args]"

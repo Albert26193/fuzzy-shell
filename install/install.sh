@@ -144,13 +144,13 @@ function fs_install_dependency {
     case "$(fs_check_os)" in
     "Ubuntu" | "Debian" | "CentOS")
         if ! fs_install_dependency_linux; then
-            fs_print_error_line "install dependency for linux failed."
+            # fs_print_error_line "install dependency for linux failed."
             return 1
         fi
         ;;
     "macOS")
         if ! fs_install_dependency_mac; then
-            fs_print_error_line "install dependency for mac failed."
+            # fs_print_error_line "install dependency for mac failed."
             return 1
         fi
         ;;
@@ -158,7 +158,7 @@ function fs_install_dependency {
         if fs_yn_prompt "your OS is not supported, just treat is as Linux, do you want to continue?"; then
             fs_print_white_line "continue to install dependency ..."
             if ! fs_install_dependency_linux; then
-                fs_print_error_line "install dependency for linux failed."
+                # fs_print_error_line "install dependency for linux failed."
                 return 1
             fi
         else

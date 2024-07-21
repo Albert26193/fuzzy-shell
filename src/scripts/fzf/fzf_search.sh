@@ -2,10 +2,9 @@
 
 ###################################################
 # description: fuzzy search
-#       input: $1: search range
-#       input: $2: ignore dirs
-#       input: $3: search keyword
-#       input: $4: another search keyword
+#       input: $1: search keyword 1
+#       input: $2: search keyword 2
+#       input: $3: search keyword 3
 #        echo: matched file(search result)
 #      return: 0: success | 1: fail
 ###################################################
@@ -49,13 +48,12 @@ function fuzzy_shell_search {
         preview_command="printf 'Name: \033[1;32m %s \033[0m\n' {}; if [[ -d {} ]]; then printf 'Type: \033[1;32m %s \033[0m\n' 'Dir'; tree -L 2 {}; else printf 'Type: \033[1;32m %s \033[0m\n' 'File'; head -n 50 {} | cat; fi"
     else
         preview_command="echo {};if [[ -d {} ]]; then ls -al {}; else head -n 50 {}; fi"
-
     fi
 
     local target_file=$(
         printf "%s\n" "${fs_search_dirs[@]}" |
             xargs -I {} ${fd_command} --hidden ${exclude_args[@]} --search-path {} |
-            fzf --query="$1$2" --ansi --preview-window 'right:40%' --preview "$preview_command"
+            fzf --query="$1$2$3" --ansi --preview-window 'right:40%' --preview "$preview_command"
     )
 
     if [[ -z "${target_file}" ]]; then
@@ -73,10 +71,11 @@ function fuzzy_shell_search {
 # description: jump to dir by fuzzy search result
 #       input: $1: search keyword 1
 #       input: $2: search keyword 2
+#       input: $3: search keyword 3
 #      return: 0: success | 1: fail
 ###################################################
 function fuzzy_shell_jump {
-    local target_file="$(fuzzy_shell_search $1 $2)"
+    local target_file="$(fuzzy_shell_search $1 $2 $3)"
     if [[ -d "${target_file}" ]]; then
         cd "${target_file}" && fs_show_files
     elif [[ -f "${target_file}" ]]; then
@@ -93,10 +92,11 @@ function fuzzy_shell_jump {
 # description: edit file by fuzzy search result
 #       input: $1: search keyword 1
 #       input: $2: search keyword 2
+#       input: $3: search keyword 3
 #      return: 0: success | 1: fail
 ###################################################
 function fuzzy_shell_edit {
-    local target_file="$(fuzzy_shell_search $1 $2)"
+    local target_file="$(fuzzy_shell_search $1 $2 $3)"
     local father_dir=$(dirname "${target_file}")
 
     if [[ -z "${target_file}" ]]; then
