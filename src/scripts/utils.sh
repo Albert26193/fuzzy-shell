@@ -208,3 +208,68 @@ function fs_get_shell {
 
     return 0
 }
+
+###################################################
+# description: check zsh version
+#       input: none
+#      return: 0: success | 1: fail
+###################################################
+function fs_check_zsh_version {
+    if ! command -v zsh &>/dev/null; then
+        fs_print_red_line "Error: zsh not found, please install zsh first."
+        return 1
+    fi
+
+    local zsh_version=$(zsh --version | awk '{print $2}')
+    local zsh_version_major=$(echo $zsh_version | cut -d. -f1)
+    local zsh_version_minor=$(echo $zsh_version | cut -d. -f2)
+
+    if [[ ${zsh_version_major} -lt 5 ]] || [[ ${zsh_version_minor} -lt 2 ]]; then
+        fs_print_red_line "Error: zsh version must be greater than 5.2"
+        return 1
+    fi
+
+    return 0
+}
+
+###################################################
+# description: check zsh version
+#       input: none
+#      return: 0: success | 1: fail
+###################################################
+function fs_check_bash_version {
+    if ! command -v bash &>/dev/null; then
+        fs_print_red_line "Error: bash not found, please install bash first."
+        return 1
+    fi
+
+    local bash_version=$(bash --version | awk '{print $4}')
+    local bash_version_major=$(echo $bash_version | cut -d. -f1)
+    local bash_version_minor=$(echo $bash_version | cut -d. -f2)
+
+    if [[ ${bash_version_major} -lt 4 ]] || [[ ${bash_version_minor} -lt 4 ]]; then
+        fs_print_red_line "Error: bash version must be greater than 4.4"
+        return 1
+    fi
+
+    return 0
+}
+
+###################################################
+# description: check usr's shell version
+#       input: none
+#      return: 0: success | 1: fail
+###################################################
+function fs_check_user_shell_version {
+    local actual_user=$(fs_get_user)
+    local user_shell=$(fs_get_shell ${actual_user})
+
+    if [[ ${user_shell} == "bash" ]]; then
+        fs_check_bash_version
+    elif [[ ${user_shell} == "zsh" ]]; then
+        fs_check_zsh_version
+    else
+        fs_print_red_line "Error: no supported shell found."
+        return 1
+    fi
+}

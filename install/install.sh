@@ -129,17 +129,6 @@ function fs_install_dependency_linux {
 #      return: 0: success | 1: fail
 ###################################################
 function fs_install_dependency {
-    # load config file
-    local git_root="$(git rev-parse --show-toplevel 2>/dev/null)"
-    local util_file_path="${git_root}/src/scripts/utils.sh"
-    if [[ ! -f "${util_file_path}" ]]; then
-        printf "%s\n" "${util_file_path} do not exist."
-        printf "%s\n" "Exit Now..."
-        return 1
-    else
-        source "${util_file_path}"
-    fi
-
     # check if current os is Linux
     case "$(fs_check_os)" in
     "Ubuntu" | "Debian" | "CentOS")
@@ -347,7 +336,20 @@ alias "hh"="fuzzy --history"
 #      return: 0: succeed | 1: failed
 ###################################################
 function main {
-    fs_install_dependency &&
+    # load config file
+    local git_root="$(git rev-parse --show-toplevel 2>/dev/null)"
+    local util_file_path="${git_root}/src/scripts/utils.sh"
+    if [[ ! -f "${util_file_path}" ]]; then
+        printf "%s\n" "${util_file_path} do not exist."
+        printf "%s\n" "Exit Now..."
+        return 1
+    else
+        source "${util_file_path}"
+    fi
+
+    # check zsh or bash version
+    fs_check_user_shell_version &&
+        fs_install_dependency &&
         fs_install_files
 }
 main
