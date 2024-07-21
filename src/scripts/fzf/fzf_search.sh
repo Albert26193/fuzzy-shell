@@ -11,7 +11,6 @@
 ###################################################
 function fuzzy_shell_search {
     local fd_command="fd"
-    local bat_command="bat"
 
     # variable load
     local fs_var_file="${HOME}/.fuzzy_shell/config.env"
@@ -137,7 +136,7 @@ function fs_show_files {
 
     printf "\033[1;30m\033[44mjump to: \033[1;30m\033[42m%s\033[0m\n" "${currentPath}"
     printf "\033[1;30m\033[44mfile count: \033[1;30m\033[42m%s\033[0m\n" "${totalNum}"
-    printf "%s\n" "---------"
+    printf "\n"
 
     if [[ ${totalNum} -le 35 ]]; then
         ls -al | tail -n +2

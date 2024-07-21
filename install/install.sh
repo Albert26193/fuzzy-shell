@@ -1,21 +1,67 @@
 ###################################################
-# description: install dependency
+# description: install dependency for macos
 #       input: none
 #      return: 0: success | 1: fail
 ###################################################
-function fs_install_dependency {
-    # load config file
-    local git_root="$(git rev-parse --show-toplevel 2>/dev/null)"
-    local util_file_path="${git_root}/src/scripts/utils.sh"
-
-    if [[ ! -f "${util_file_path}" ]]; then
-        printf "%s\n" "${util_file_path} do not exist."
-        printf "%s\n" "Exit Now..."
+function fs_install_dependency_mac {
+    # Check if the script is executed as root
+    if [[ "$(id -u)" -eq 0 ]]; then
+        fs_print_error_line "DO NOT run this script as root." >&2
         return 1
-    else
-        source "${util_file_path}"
     fi
 
+    # check if installed brew
+    if ! command -v brew &>/dev/null; then
+        fs_print_red_line "brew not installed, install it."
+        return 1
+    fi
+
+    # get all install list
+    local all_install_list=(
+        "fd"
+        "fzf"
+    )
+    local to_install_list=()
+    for package in "${all_install_list[@]}"; do
+        if ! command -v "$package" &>/dev/null; then
+            fs_print_red "[ X ]"
+            fs_print_red "${package}"
+            fs_print_white_line "is not installed"
+            to_install_list+=("${package}")
+        else
+            fs_print_green "[ √ ]"
+            fs_print_blue "${package}"
+            fs_print_white_line "is already installed."
+        fi
+    done
+
+    # if all dependency installed, exit now
+    if [[ ${#to_install_list[@]} -eq 0 ]]; then
+        fs_print_green_line "All dependency installed, exit now..."
+        return 0
+    fi
+
+    # if have dependency not installed, install it
+    printf "\n"
+    fs_print_yellow "🔧Here is the list of packages to install: "
+    printf "${FS_COLOR_CYAN}%s${FS_COLOR_RESET} " "${to_install_list[@]}"
+    printf "\n"
+    fs_print_cyan_line "total count to install: ${#to_install_list[@]}"
+    if fs_yn_prompt "Do you want to ${FS_COLOR_GREEN}install all dependency${FS_COLOR_RESET}?"; then
+        fs_print_white_line "install dependency ..."
+        brew install "${to_install_list[@]}"
+    else
+        fs_print_white_line "do not install dependency, exit now..."
+        return 1
+    fi
+}
+
+###################################################
+# description: install dependency for linux(x86)
+#       input: none
+#      return: 0: success | 1: fail
+###################################################
+function fs_install_dependency_linux {
     # Check if the script is executed as root
     if [[ ! "$(id -u)" -eq 0 ]]; then
         fs_print_error_line "run this script with ROOT or SUDO" >&2
@@ -29,19 +75,11 @@ function fs_install_dependency {
         return 1
     fi
 
-    # check if current os is Linux
-    if fs_check_os | grep -q "Mac"; then
-        fs_print_red "only support Linux os, current os is:"
-        fs_print_white_line "$(fs_check_os)"
-        fs_print_white_line "you can check fuzzy-mac for macOS."
-        return 1
-    fi
-
+    # get all install list
     local all_install_list=(
         "fd"
         "fzf"
     )
-
     local to_install_list=()
     for package in "${all_install_list[@]}"; do
         if ! which "$package" &>/dev/null; then
@@ -55,7 +93,6 @@ function fs_install_dependency {
             fs_print_white_line "is installed"
         fi
     done
-
     if [[ ${#to_install_list[@]} -eq 0 ]]; then
         echo "All dependency installed!"
         return 0
@@ -87,6 +124,54 @@ function fs_install_dependency {
 }
 
 ###################################################
+# description: install dependency
+#       input: none
+#      return: 0: success | 1: fail
+###################################################
+function fs_install_dependency {
+    # load config file
+    local git_root="$(git rev-parse --show-toplevel 2>/dev/null)"
+    local util_file_path="${git_root}/src/scripts/utils.sh"
+    if [[ ! -f "${util_file_path}" ]]; then
+        printf "%s\n" "${util_file_path} do not exist."
+        printf "%s\n" "Exit Now..."
+        return 1
+    else
+        source "${util_file_path}"
+    fi
+
+    # check if current os is Linux
+    case "$(fs_check_os)" in
+    "Ubuntu" | "Debian" | "CentOS")
+        if ! fs_install_dependency_linux; then
+            fs_print_error_line "install dependency for linux failed."
+            return 1
+        fi
+        ;;
+    "macOS")
+        if ! fs_install_dependency_mac; then
+            fs_print_error_line "install dependency for mac failed."
+            return 1
+        fi
+        ;;
+    *)
+        if fs_yn_prompt "your OS is not supported, just treat is as Linux, do you want to continue?"; then
+            fs_print_white_line "continue to install dependency ..."
+            if ! fs_install_dependency_linux; then
+                fs_print_error_line "install dependency for linux failed."
+                return 1
+            fi
+        else
+            fs_print_white_line "exit now..."
+            return 1
+        fi
+        ;;
+    esac
+
+    return 0
+}
+
+###################################################
 # description: install fuzzy-shell files to ~/.fuzzy_shell
 #       input: none
 #      return: 0: succeed | 1: failed
@@ -112,7 +197,7 @@ function fs_install_files {
     fi
 
     # get actual user home
-    local user_home=$(su - ${actual_user} -c "printf '%s' \"\$HOME\"")
+    local user_home=$(eval echo ~"${actual_user}")
     if [[ -z "${user_home}" ]]; then
         fs_print_error_line "Error: actual user not found."
         return 1
@@ -248,5 +333,13 @@ alias "hh"="fuzzy --history"
     fs_print_white_line "then, exec source ${user_shellrc} to make it work."
 }
 
-fs_install_dependency &&
-    fs_install_files
+###################################################
+# description: main function
+#       input: none
+#      return: 0: succeed | 1: failed
+###################################################
+function main {
+    fs_install_dependency &&
+        fs_install_files
+}
+main

@@ -50,7 +50,7 @@ fs_print_info() { printf "${FS_BACKGROUND_GREEN}${FS_COLOR_BLACK}%s${FS_COLOR_RE
 #          $1: custom prompt to print
 #      return: 0: yes | 1: no
 ###################################################
-function fs_yn_prompt() {
+function fs_yn_prompt {
     local yn_input=""
     while true; do
         printf "$1 ${FS_COLOR_CYAN}[y/n]: ${FS_COLOR_RESET}"
@@ -68,7 +68,7 @@ function fs_yn_prompt() {
 #          $1: current step description
 #      return: nothing
 ###################################################
-function fs_print_step() {
+function fs_print_step {
     local current_step=$1
     fs_print_green_line "========================================="
     fs_print_green_line "================= STEP ${current_step} ================"
@@ -79,7 +79,7 @@ function fs_print_step() {
 # description: get git root path
 #      return: git root path
 ###################################################
-function fs_get_gitroot() {
+function fs_get_gitroot {
     local git_root=$(git rev-parse --show-toplevel 2>/dev/null)
 
     if [[ -z "${git_root}" ]]; then
@@ -95,7 +95,7 @@ function fs_get_gitroot() {
 # description: give current os judgement
 #      return: Ubuntu | macOS | Debian | CentOS | Other
 ###################################################
-function fs_check_os() {
+function fs_check_os {
     if [[ -f /etc/os-release ]]; then
         source /etc/os-release
         local OS=$(echo $NAME | awk '{print$1}')
@@ -128,7 +128,7 @@ function fs_check_os() {
 # description: give current os architecture judgement
 #      return: x86_64 | i386 | arm | aarch64 | Other
 ###################################################
-function fs_check_arch() {
+function fs_check_arch {
     local ARCH
 
     if type uname >/dev/null 2>&1; then
@@ -152,7 +152,7 @@ function fs_check_arch() {
 # description: get actual user from SUDO
 #      return: user's name
 ###################################################
-function fs_get_user() {
+function fs_get_user {
     # check if exists $SUDO_USER
     if [ -n "$SUDO_USER" ]; then
         original_user=$SUDO_USER
@@ -168,7 +168,7 @@ function fs_get_user() {
 #          $1: user name
 #      return: user's name
 ###################################################
-function fs_get_shell() {
+function fs_get_shell {
     if [[ -z "$1" ]]; then
         fs_print_red_line "Error: user name is empty."
         return 1
