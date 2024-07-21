@@ -58,11 +58,11 @@ Options:
   -j, --jump [keyword1] [keyword2] [keyword3], namely fuzzy jump
   -e, --edit [keyword1] [keyword2] [keyword3], namely fuzzy edit
 ```
-::: details
-- The following three features, `fuzzy jump`, `fuzzy edit`, and `fuzzy search`, will call the `fd` and `fzf` tools. `fd` is used for file searching, and `fzf` is used for interactive file selection.
-- The index range, ignore files, etc., can be configured in `~/.fuzzy_shell/config.env`.
-- Path parameters do not need to match precisely, only fuzzy matching is required.
-:::
+> [!NOTE]
+> - The following three features, `fuzzy jump`, `fuzzy edit`, and `fuzzy search`, will call the `fd` and `fzf` tools. `fd` is used for file searching, and `fzf` is used for interactive file selection.
+> - The index range, ignore files, etc., can be configured in `~/.fuzzy_shell/config.env`.
+> - Path parameters do not need to match precisely, only fuzzy matching is required.
+
 
 ### 2.1 Fuzzy Jump
 
@@ -100,9 +100,8 @@ rm $(fuzzy --search my-path some-file)
 rm $(fs my-path some-file)
 ```
 
-::: details
-- `fuzzy history` will call `fzf` and `history`. `history` is used to retrieve historical records, and `fzf` is used for interactive file selection.
-:::
+> [!NOTE]
+> - `fuzzy history` will call `fzf` and `history`. `history` is used to retrieve historical records, and `fzf` is used for interactive file selection.
 
 ### 2.4 fuzzy history Fuzzy History Search
 
