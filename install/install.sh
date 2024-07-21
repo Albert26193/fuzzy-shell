@@ -321,8 +321,8 @@ function fs_add_to_shellrc {
     # add fuzzy-shell script to shellrc
     echo -e "---------------------------------------------\n"
     fs_print_info_line "TIP: "
-    fs_print_white_line '#------------------- fuzzy-shell -------------------'
     fs_print_white_line "have already added below to your ~/.${user_shell}rc:"
+    fs_print_green_line '#------------------- fuzzy-shell -------------------'
     fs_print_green_line '   source ${HOME}/.fuzzy_shell/scripts/export.sh'
     fs_print_green_line '   alias "fs"="fuzzy --search'
     fs_print_green_line '   alias "fj"="fuzzy --jump"'
