@@ -53,7 +53,7 @@ function fuzzy_shell_search {
     local target_file=$(
         printf "%s\n" "${fs_search_dirs[@]}" |
             xargs -I {} ${fd_command} --hidden ${exclude_args[@]} --search-path {} |
-            fzf --query="$1$2$3" --ansi --preview-window 'right:40%' --preview "$preview_command"
+            fzf --query="$1$2$3" --ansi --preview-window 'right:40%:wrap' --preview "$preview_command"
     )
 
     if [[ -z "${target_file}" ]]; then

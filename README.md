@@ -20,8 +20,11 @@
 # clone the repo
 git clone https://github.com/Albert26193/fuzzy-shell.git
 
-# install 
-cd fuzzy_shell && sudo bash install/install.sh
+# install on Linux 
+cd fuzzy-shell && sudo bash install/install.sh
+
+# install on Mac (no sudo)
+cd fuzzy-shell && bash install/install.sh
 ```
 
 - After installation, if you see the following configuration automatically added to `~/.bashrc` or `~/.zshrc`, the installation is successful 🎉:
