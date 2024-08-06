@@ -247,8 +247,8 @@ function fs_check_bash_version {
     local bash_version_major=$(echo $bash_version | cut -d. -f1)
     local bash_version_minor=$(echo $bash_version | cut -d. -f2)
 
-    if [[ ${bash_version_major} -lt 4 ]] || [[ ${bash_version_minor} -lt 4 ]]; then
-        fs_print_red_line "Error: bash version must be greater than 4.4"
+    if [[ ${bash_version_major} -lt 4 ]] || [[ ${bash_version_minor} -lt 2 ]]; then
+        fs_print_red_line "Error: bash version must be greater than 4.2"
         return 1
     fi
 
