@@ -45,7 +45,7 @@ Type `fj` or `fuzzy --jump` to use the fuzzy jump feature.
 ### 1.2 Dependencies
 
 - For MacOS users, `brew` needs to be pre-installed.
-- The minimum version requirement for `zsh` is `5.2.0`, and for `bash` is `4.4.0`
+- The minimum version requirement for `zsh` is `5.2.0`, and for `bash` is `4.2.0`
 - It's recommended to pre-install `fd` and `fzf` using a package manager. If not pre-installed, you can use the `fd` and `fzf` binary files that come with `fuzzy_shell`
 
 ## 2. Usage
@@ -223,7 +223,7 @@ cd fuzzy_shell && sudo bash install/uninstall.sh
 ### 4.3 Supported Shells
 
 - Supports `bash` and `zsh`
-- The minimum version requirement for `bash` is `4.4.0`, and for `zsh` is `5.2.0`
+- The minimum version requirement for `bash` is `4.2.0`, and for `zsh` is `5.2.0`
 - Currently does not support `fish`, and there are no plans to support `fish` in the future
 
 ## 5. Future Plans
