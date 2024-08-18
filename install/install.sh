@@ -219,7 +219,12 @@ function fs_install_files {
 	if [[ $(fs_check_os) =~ "macOS" ]]; then
 		bash -c "chown -R ${actual_user}:staff ${target_dir}"
 	else
-		bash -c "chown -R ${actual_user}:${actual_user} ${target_dir}"
+		local user_group=$(id -gn "${actual_user}")
+		if [[ -z "${user_group}" ]]; then
+			fs_print_red_line "get user group failed."
+			return 1
+		fi
+		bash -c "chown -R ${actual_user}:${user_group} ${target_dir}"
 	fi
 
 	# check if installed successfully
