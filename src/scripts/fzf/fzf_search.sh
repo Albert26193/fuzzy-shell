@@ -11,6 +11,11 @@
 function fuzzy_shell_search {
     local fd_command="fd"
 
+    # alias wont work, if fdfind exits , should use it
+    if command -v "fdfind" &>/dev/null; then
+        fd_command="fdfind"
+    fi
+
     # variable load
     local fs_var_file="${HOME}/.fuzzy_shell/config.env"
 
