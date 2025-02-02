@@ -75,24 +75,32 @@ function fs_install_dependency_linux {
 		return 1
 	fi
 
-	# get all install list
-	local all_install_list=(
-		"fd"
-		"fzf"
+	declare local -A tool_alternatives=(
+		["fd"]="fdfind"
+		["fzf"]="fzf"
 	)
+
 	local to_install_list=()
-	for package in "${all_install_list[@]}"; do
-		if ! which "$package" &>/dev/null; then
+	for package in "${!tool_alternatives[@]}"; do
+		local is_installed=false
+		local alternative="${tool_alternatives[${package}]}"
+
+		if command -v "${package}" &>/dev/null || { [[ -n "${alternative}" ]] && command -v "${alternative}" &>/dev/null; }; then
+			is_installed=true
+		fi
+
+		if ! ${is_installed}; then
 			fs_print_red "[ X ]"
 			fs_print_red "${package}"
 			fs_print_white_line "is not installed"
-			to_install_list+=("$package")
+			to_install_list+=("${package}")
 		else
 			fs_print_green "[ √ ]"
 			fs_print_green "${package}"
 			fs_print_white_line "is installed"
 		fi
 	done
+
 	if [[ ${#to_install_list[@]} -eq 0 ]]; then
 		echo "All dependency installed!"
 		return 0
