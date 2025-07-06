@@ -57,7 +57,7 @@ function fuzzy_shell_search {
 
     local target_file=$(
         printf "%s\n" "${fs_search_dirs[@]}" |
-            xargs -I {} ${fd_command} --hidden ${exclude_args[@]} --search-path {} |
+            xargs -I {} ${fd_command} --hidden --no-ignore ${exclude_args[@]} --search-path {} |
             fzf --query="$1$2$3" --ansi --preview-window 'right:40%:wrap' --preview "$preview_command"
     )
 
@@ -144,7 +144,7 @@ function fs_show_files {
     printf "\n"
 
     if [[ ${totalNum} -le 35 ]]; then
-        ls -al | tail -n +2
+        ls -al --color=always | tail -n +2
     elif [[ ${totalNum} -ge 101 ]]; then
         echo "files in current directory is more than 100"
     else
